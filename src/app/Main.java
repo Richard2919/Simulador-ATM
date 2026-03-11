@@ -3,6 +3,7 @@ package app;
 import entity.Conta;
 import excessoes.SaldoInsuficienteException;
 
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -13,7 +14,10 @@ public class Main {
 
         Map<String, Conta> contas = new HashMap<>();
 
+        carregarDados(contas);
+
         int opcao = 0;
+
         while (opcao != 6){
 
             System.out.println("=== Sistema ATM ===");
@@ -57,7 +61,7 @@ public class Main {
                         try {
                             contaEncontrada.depositar(valor);
                             System.out.println("Novo saldo: R$" + contaEncontrada.getSaldo());
-                        }catch (NumberFormatException e){
+                        }catch (IllegalArgumentException e){
                             System.out.println("Erro: " + e.getMessage());
                         }
                     }else {
@@ -131,15 +135,42 @@ public class Main {
                     break;
 
                 case 6:
+                    salvarDados(contas);
                     System.out.println("Saindo do sistema... Até logo.");
                     break;
 
                 default:
                     System.out.println("ERRO: opção inválida");
             }
-
         }
-
         sc.close();
+    }
+    public static void carregarDados(Map<String, Conta> contas) {
+        File arquivo = new File("contas.txt");
+        if (!arquivo.exists()) return;
+
+        try (Scanner leitor = new Scanner(arquivo)) {
+            while (leitor.hasNextLine()) {
+                String linha = leitor.nextLine();
+                String[] partes = linha.split(";");
+                if (partes.length < 2) continue;
+
+                Conta c = new Conta(partes[0]);
+                c.depositar(Double.parseDouble(partes[1]));
+                contas.put(partes[0], c);
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao carregar dados.");
+        }
+    }
+
+    public static void salvarDados(Map<String, Conta> contas) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("contas.txt"))) {
+            for (Conta conta : contas.values()) {
+                writer.println(conta.getTitular() + ";" + conta.getSaldo());
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar dados.");
+        }
     }
 }
