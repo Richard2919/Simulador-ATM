@@ -35,6 +35,7 @@ public class Main {
                     Conta novaConta = new Conta(nomeTitular);
 
                     contas.put(nomeTitular, novaConta); // contas.put guarda a "ficha"
+                                                        // put para guardar ou substituir algo.
 
                     System.out.println("Conta criada com sucesso!" + nomeTitular);
 
@@ -47,6 +48,7 @@ public class Main {
 
                     // tenta achar a conta no Map
                     Conta contaEncontrada = contas.get(buscaNome); // contas.get a recupera pelo nome.
+                                                                    // get para pegar algo que já existe
 
                     if(contaEncontrada != null){
                         System.out.println("Quanto deseja depositar?");
